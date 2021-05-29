@@ -3,7 +3,6 @@ import inspect
 import os
 import random
 import re
-from sys import stdout
 import traceback
 from contextlib import redirect_stdout
 from datetime import datetime
@@ -674,21 +673,60 @@ class Utility(commands.Cog):
 
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
-    async def mention(self, ctx, *mention: Union[discord.Role, discord.Member]):
+    async def mention(self, ctx, *user_or_role: Union[discord.Role, discord.Member, str]):
         """
         Change what the bot mentions at the start of each thread.
 
-        Type only `{prefix}mention` to retrieve your current "mention" message.
-        """
-        # TODO: ability to disable mention.
-        current = self.bot.config["mention"]
+        `user_or_role` may be a user ID, mention, name, role ID, mention, or name.
+        You can also set it to mention multiple users or roles, just separate the arguments with space.
 
-        if not mention:
+        Examples:
+        - `{prefix}mention @user`
+        - `{prefix}mention @user @role`
+        - `{prefix}mention 984301093849028 388218663326449`
+        - `{prefix}mention everyone`
+
+        Do not ping `@everyone` to set mention to everyone, use "everyone" or "all" instead.
+
+        Notes:
+        - Type only `{prefix}mention` to retrieve your current "mention" message.
+        - `{prefix}mention disable` to disable mention.
+        - `{prefix}mention reset` to reset it to default value, which is "@here".
+        """
+        current = self.bot.config["mention"]
+        if not user_or_role:
             embed = discord.Embed(
                 title="Current mention:", color=self.bot.main_color, description=str(current)
             )
+        elif (
+            len(user_or_role) == 1
+            and isinstance(user_or_role[0], str)
+            and user_or_role[0].lower() in ("disable", "reset")
+        ):
+            option = user_or_role[0].lower()
+            if option == "disable":
+                embed = discord.Embed(
+                    description=f"Disabled mention on thread creation.", color=self.bot.main_color,
+                )
+                self.bot.config["mention"] = None
+            else:
+                embed = discord.Embed(
+                    description="`mention` is reset to default.", color=self.bot.main_color,
+                )
+                self.bot.config.remove("mention")
+            await self.bot.config.update()
         else:
-            mention = " ".join(i.mention for i in mention)
+            mention = []
+            everyone = ("all", "everyone")
+            for m in user_or_role:
+                if not isinstance(m, (discord.Role, discord.Member)) and m not in everyone:
+                    raise commands.BadArgument(f'Role or Member "{m}" not found.')
+                elif m == ctx.guild.default_role or m in everyone:
+                    mention.append("@everyone")
+                    continue
+                mention.append(m.mention)
+
+            mention = " ".join(mention)
             embed = discord.Embed(
                 title="Changed mention!",
                 description=f'On thread creation the bot now says "{mention}".',
@@ -1778,7 +1816,6 @@ class Utility(commands.Cog):
             split_cmd = command.split(" ")
             for n in range(1, len(split_cmd) + 1):
                 if self.bot.get_command(" ".join(split_cmd[0:n])):
-                    print(self.bot.get_command(" ".join(split_cmd[0:n])))
                     valid = True
                     break
 

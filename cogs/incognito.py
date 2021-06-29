@@ -5,7 +5,7 @@ from core import checks
 from core.models import PermissionLevel
 
 class Incognito(commands.Cog):
-    """Commands related to"""
+    """Commands related to Incognito Advertising"""
     def __init__(self, bot):
         self.bot = bot
 

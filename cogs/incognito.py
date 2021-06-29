@@ -1,17 +1,19 @@
 import discord
-
 from discord.ext import commands
+
 from core import checks
 from core.models import PermissionLevel
+
 class Incognito(commands.Cog):
     """Commands related to"""
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     @commands.bot_has_permissions(embed_links=True)
     async def staff_intro(self, ctx, user: discord.User):
+        """Create the staff intro announcement in #staff-announcements"""
         chan = self.bot.get_channel(736780095855001662)
         await chan.send(embed=discord.Embed(
             title="**__Staff 7 day trial__**",

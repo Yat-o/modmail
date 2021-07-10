@@ -12,11 +12,12 @@ class Incognito(commands.Cog):
     @commands.command()
     @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
     async def addstaff(self, ctx: commands.Context, member: discord.Member):
+        """Command for adding staff members to the Incognito Advertising Staff Team"""
         admin =  ctx.guild.get_role(695051576552718416)
         tmod = ctx.guild.get_role(736717979609464872)
         await member.add_roles(tmod, admin)
         await ctx.send(f"Added T-Mod and Admin Base Role to {member}")
-        await ctx.send("Creating Staff Announcement now in #staff-announcements")
+        await ctx.send("Creating Staff Announcement now in <#736780095855001662>")
         chan = ctx.guild.get_channel(736780095855001662)
         await chan.send(
             embed=discord.Embed(

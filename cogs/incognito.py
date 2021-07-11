@@ -16,7 +16,7 @@ class Incognito(commands.Cog):
         admin =  ctx.guild.get_role(695051576552718416)
         tmod = ctx.guild.get_role(736717979609464872)
         await member.add_roles(tmod, admin)
-        await ctx.send(f"Added T-Mod and Admin Base Role to {member}")
+        await ctx.send(f"Added T-Mod and Base Administrator Role to {member}")
         await ctx.send("Creating Staff Announcement now in <#736780095855001662>")
         chan = ctx.guild.get_channel(736780095855001662)
         await chan.send(
@@ -27,7 +27,33 @@ class Incognito(commands.Cog):
             ).set_footer(text="INCOGNITO Advertising (c) |  https://discord.gg/NP4TXsZ")
         )
 
+    @commands.command()
+    @checks.has_permissions(PermissionLevel.ADMINISTRATOR)
+    async def removestaff(self, ctx: commands.Context, member: discord.Member, *, reason = None):
+        """Command for removing staff members to the Incognito Advertising Staff Team"""
+        admin = ctx.guild.get_role(695051576552718416)
+        tmod = ctx.guild.get_role(736717979609464872)
+        if reason is None:
+            return await ctx.send("Please add a reason to remove this staff member.")
 
+        if not any([tmod, admin]) in member.roles:
+            return await ctx.send("This member is a not a staff member.")
+
+        else:
+            await member.remove_roles(tmod, admin)
+            await ctx.send(f"Removed T-Mod and Base Administrator Role to {member}")
+            msg = await ctx.send(f"Attempting To DM {member} termination message.")
+            try:
+                await member.send(
+                    embed=discord.Embed(
+                        title="You were removed from the Incognito Advertising Staff Team!",
+                        description=f"Reason: {reason}",
+                        color=0xff0000
+                    ).set_footer(text=f"Acting Supervisor: {ctx.author}")
+                )
+                await msg.add_reaction("\u2705")
+            except (discord.Forbidden, discord.HTTPException):
+                await msg.add_reaction("\u2049")
 
 
 def setup(bot):

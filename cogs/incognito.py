@@ -36,7 +36,7 @@ class Incognito(commands.Cog):
         if reason is None:
             return await ctx.send("Please add a reason to remove this staff member.")
 
-        if not any([tmod, admin]) in member.roles:
+        if not tmod in member.roles or not admin in member.roles:
             return await ctx.send("This member is a not a staff member.")
 
         else:

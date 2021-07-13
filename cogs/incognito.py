@@ -41,7 +41,7 @@ class Incognito(commands.Cog):
 
         else:
             await member.remove_roles(tmod, admin)
-            await ctx.send(f"Removed T-Mod and Base Administrator Role to {member}")
+            await ctx.send(f"Removed T-Mod and Base Administrator Role from {member}")
             msg = await ctx.send(f"Attempting To DM {member} termination message.")
             try:
                 await member.send(

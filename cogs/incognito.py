@@ -20,7 +20,7 @@ class Incognito(commands.Cog):
         roles.append(admin)
         await member.add_roles(*roles)
         await member.edit(nick=f"TM | {member.name}")
-        await ctx.send(f"Added T-Mod and Base Administrator Role to {member}")
+        await ctx.send(f"Added T-Mod and Base Administrator Role to {member} and renamed them to {member.display_name}")
         await ctx.send("Creating Staff Announcement now in <#736780095855001662>")
         chan = ctx.guild.get_channel(736780095855001662)
         await chan.send(
